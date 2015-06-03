@@ -1,6 +1,6 @@
 {
   "name": "alien-bind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An implementation of bind that does not use Function.prototype.bind.",
   "main": "alien-bind.js",
   "scripts": {
