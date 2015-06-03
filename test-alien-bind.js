@@ -5,7 +5,7 @@ describe('bind', function () {
   var bind
 
   beforeEach(function () {
-    sinon.spy(Function.prototype, 'bind')
+    createOrStub(Function.prototype, 'bind')
     bind = require('./alien-bind')
   })
 
@@ -26,7 +26,7 @@ describe('bind', function () {
 
     var internals = bind(introspection, context)()
 
-    expect(internals.this).to.be(context)
+    expect(internals.context).to.be(context)
     expect(internals.args.length).to.be(0)
   })
 
@@ -36,7 +36,7 @@ describe('bind', function () {
 
     var internals = bind(introspection, context)(arg0)
 
-    expect(internals.this).to.be(context)
+    expect(internals.context).to.be(context)
     expect(internals.args.length).to.be(1)
     expect(internals.args[0]).to.be(arg0)
   })
@@ -48,7 +48,7 @@ describe('bind', function () {
 
     var internals = bind(introspection, context, arg0, arg1)()
 
-    expect(internals.this).to.be(context)
+    expect(internals.context).to.be(context)
     expect(internals.args.length).to.be(2)
     expect(internals.args[0]).to.be(arg0)
     expect(internals.args[1]).to.be(arg1)
@@ -62,7 +62,7 @@ describe('bind', function () {
 
     var internals = bind(introspection, context, arg0)(arg1, arg2)
 
-    expect(internals.this).to.be(context)
+    expect(internals.context).to.be(context)
     expect(internals.args.length).to.be(3)
     expect(internals.args[0]).to.be(arg0)
     expect(internals.args[1]).to.be(arg1)
@@ -70,9 +70,20 @@ describe('bind', function () {
   })
 })
 
+function createOrStub (parent, methodName) {
+  if (parent[methodName] !== undefined) {
+    return sinon.stub(parent, methodName)
+  }
+  parent[methodName] = sinon.stub()
+  parent[methodName].restore = function () {
+    delete parent[methodName]
+  }
+  return parent[methodName]
+}
+
 function introspection () {
   return {
-    this: this,
+    context: this,
     args: arguments
   }
 }
